@@ -10,12 +10,15 @@ function highlight(event) {
 //ALTERNATE PLAYER TURNS
 
 const boxContainer = document.querySelector('#box-container')
+const turnText = document.querySelector('.turn-text')
 
 function handleClick(event) {
     if (event.target.classList.contains('game-turn')) {
         event.target.classList.add('clicked', 'player-1')
+        turnText.innerText = `Blue's turn`
     } else {
         event.target.classList.add('clicked', 'player-2')
+        turnText.innerText = `Red's turn`
     }
     event.target.disabled = true
     event.target.classList.remove('hover')
@@ -44,6 +47,7 @@ function handleRestart() {
     })
     winner = null
     winnerText.innerText = ''
+    turnText.innerText = `Red's turn`
 }
 
 restartButton.addEventListener('click', handleRestart)
@@ -137,11 +141,20 @@ function determineWinner() {
         winner = false
     }
     if (winner === true) {
-        winnerText.innerText = `Player 1 wins!`
+        winnerText.innerText = `Red wins!`
+        turnText.innerText = ``
+        boxes.forEach((box) => {
+            box.disabled = true
+        })
     } else if (winner === false) {
-        winnerText.innerText = `Player 2 wins!`
+        winnerText.innerText = `Blue wins!`
+        turnText.innerText = ``
+        boxes.forEach((box) => {
+            box.disabled = true
+        })
     } else if ((player1.length + player2.length === 9) && (winner === null)) {
         winnerText.innerText = `It's a tie!`
+        turnText.innerText = ``
     }
 }
 
@@ -178,9 +191,63 @@ function smartWinner() {
 
 
 //ATTEMPT 2
+//SUCCESSFUL!
 
 function smartWinner2 () {
-    
+    let winner = null
+    let player1 = document.querySelectorAll('.player-1')
+    let player2 = document.querySelectorAll('.player-2')
+
+    for (let i=1; i<4; i++) {
+        let row = Array.from(document.querySelectorAll(`.row-${i}`))
+        let column = Array.from(document.querySelectorAll(`.column-${i}`))
+        
+        if (row.every((square) => square.classList.contains('player-1'))) {
+            winner = true
+        } else if (row.every((square) => square.classList.contains('player-2'))) {
+            winner = false
+        }
+        if (column.every((square) => square.classList.contains('player-1'))) {
+            winner = true
+        } else if (column.every((square) => square.classList.contains('player-2'))) {
+            winner = false
+        }
+    }
+    if (boxes[0].classList.contains('player-1') &&
+        boxes[4].classList.contains('player-1') &&
+        boxes[8].classList.contains('player-1')) {
+        winner = true
+    } else if (boxes[2].classList.contains('player-1') &&
+        boxes[4].classList.contains('player-1') &&
+        boxes[6].classList.contains('player-1')) {
+        winner = true
+    }
+    else if (boxes[0].classList.contains('player-2') &&
+        boxes[4].classList.contains('player-2') &&
+        boxes[8].classList.contains('player-2')) {
+        winner = false
+    } else if (boxes[2].classList.contains('player-2') &&
+        boxes[4].classList.contains('player-2') &&
+        boxes[6].classList.contains('player-2')) {
+        winner = false
+    }
+
+    if (winner === true) {
+        winnerText.innerText = `Red wins!`
+        turnText.innerText = ``
+        boxes.forEach((box) => {
+            box.disabled = true
+        })
+    } else if (winner === false) {
+        winnerText.innerText = `Blue wins!`
+        turnText.innerText = ``
+        boxes.forEach((box) => {
+            box.disabled = true
+        })
+    } else if ((player1.length + player2.length === 9) && (winner === null)) {
+        winnerText.innerText = `It's a tie!`
+        turnText.innerText = ``
+    }
 }
 
 
@@ -194,8 +261,8 @@ boxes.forEach((box) => {
     box.addEventListener('mouseover', highlight)
     box.addEventListener('mouseleave', highlight)
     box.addEventListener('click', handleClick)
-    box.addEventListener('click', determineWinner)
-//    box.addEventListener('click', smartWinner)
+//    box.addEventListener('click', determineWinner)
+    box.addEventListener('click', smartWinner2)
 })
 
 
